@@ -1,7 +1,7 @@
-﻿using Plugin.Media;
-using Plugin.Media.Abstractions;
-using System;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Stormlion.ImageCropper
@@ -41,56 +41,86 @@ namespace Stormlion.ImageCropper
 
         public Action Faiure { get; set; }
 
+        /*
         public PickMediaOptions PickMediaOptions { get; set; } = new PickMediaOptions
         {
             PhotoSize = PhotoSize.Large,
         };
 
         public StoreCameraMediaOptions StoreCameraMediaOptions { get; set; } = new StoreCameraMediaOptions();
+        */
+
+        public MediaPickerOptions MediaPickerOptions { get; set; } = new MediaPickerOptions();
+
 
         public async void Show(Page page, string imageFile = null)
         {
-            if(imageFile == null)
+            if (imageFile == null)
             {
-                await CrossMedia.Current.Initialize();
-
-                MediaFile file;
+                FileResult file = null;
+                string newFile = null;
 
                 string action = await page.DisplayActionSheet(SelectSourceTitle, CancelButtonTitle, null, TakePhotoTitle, PhotoLibraryTitle);
-                if (action == TakePhotoTitle)
+                try
                 {
-                    if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+                    if (action == TakePhotoTitle)
                     {
-                        await page.DisplayAlert("No Camera", ":( No camera available.", "OK");
+                        /*
+                        if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+                        {
+                            await page.DisplayAlert("No Camera", ":( No camera available.", "OK");
+                            Faiure?.Invoke();
+                            return;
+                        }
+                        file = await CrossMedia.Current.TakePhotoAsync(StoreCameraMediaOptions);
+                        */
+                        file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
+                    }
+                    else if (action == PhotoLibraryTitle)
+                    {
+                        /*
+                        if(!CrossMedia.Current.IsPickPhotoSupported)
+                        {
+                            await page.DisplayAlert("Error", "This device is not supported to pick photo.", "OK");
+                            Faiure?.Invoke();
+                            return;
+                        }
+                        file = await CrossMedia.Current.PickPhotoAsync(PickMediaOptions);
+                        */
+
+                        file = await MediaPicker.PickPhotoAsync(MediaPickerOptions);
+                    }
+                    else
+                    {
                         Faiure?.Invoke();
                         return;
                     }
 
-                     file = await CrossMedia.Current.TakePhotoAsync(StoreCameraMediaOptions);
-                }
-                else if(action == PhotoLibraryTitle)
-                {
-                    if(!CrossMedia.Current.IsPickPhotoSupported)
+                    //Si se capturo correctamente
+                    if (file != null)
                     {
-                        await page.DisplayAlert("Error", "This device is not supported to pick photo.", "OK");
-                        Faiure?.Invoke();
-                        return;
+                        // save the file into local storage
+                        newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
+                        using (var stream = await file.OpenReadAsync())
+                        using (var newStream = File.OpenWrite(newFile))
+                            await stream.CopyToAsync(newStream);
                     }
-                    file = await CrossMedia.Current.PickPhotoAsync(PickMediaOptions);
+
                 }
-                else
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"CapturePhotoAsync THREW: {ex.Message}");
+                }
+
+                if (file == null || newFile == null)
                 {
                     Faiure?.Invoke();
                     return;
                 }
 
-                if (file == null)
-                {
-                    Faiure?.Invoke();
-                    return;
-                }
+                //imageFile = file.Path;
 
-                imageFile = file.Path;
+                imageFile = newFile;
             }
 
             // small delay

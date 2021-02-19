@@ -1,13 +1,8 @@
 ﻿using System;
-
 using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
 using Stormlion.ImageCropper.Droid;
-using Plugin.Permissions;
 using Android.Content;
 
 namespace Test.Droid
@@ -31,9 +26,7 @@ namespace Test.Droid
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
-            PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
