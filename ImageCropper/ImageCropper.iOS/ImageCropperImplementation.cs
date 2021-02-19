@@ -1,7 +1,6 @@
 ﻿using Bind_TOCropViewController;
 using CoreGraphics;
 using Foundation;
-using Plugin.Media.Abstractions;
 using Stormlion.ImageCropper.iOS;
 using System;
 using System.Diagnostics;

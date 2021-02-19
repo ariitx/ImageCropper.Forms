@@ -1,5 +1,4 @@
-﻿using Plugin.Media.Abstractions;
-
+﻿
 namespace Stormlion.ImageCropper
 {
     public interface IImageCropperWrapper

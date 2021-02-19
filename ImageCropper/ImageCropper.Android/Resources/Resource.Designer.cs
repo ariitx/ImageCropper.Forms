@@ -4533,64 +4533,76 @@ namespace Stormlion.ImageCropper.Droid
 			public static int character_counter_pattern = 2131558430;
 			
 			// aapt resource value: 0x7F0D001F
-			public static int crop_image_activity_no_permissions = 2131558431;
+			public static int copy_toast_msg = 2131558431;
 			
 			// aapt resource value: 0x7F0D0020
-			public static int crop_image_activity_title = 2131558432;
+			public static int crop_image_activity_no_permissions = 2131558432;
 			
 			// aapt resource value: 0x7F0D0021
-			public static int crop_image_menu_crop = 2131558433;
+			public static int crop_image_activity_title = 2131558433;
 			
 			// aapt resource value: 0x7F0D0022
-			public static int crop_image_menu_flip = 2131558434;
+			public static int crop_image_menu_crop = 2131558434;
 			
 			// aapt resource value: 0x7F0D0023
-			public static int crop_image_menu_flip_horizontally = 2131558435;
+			public static int crop_image_menu_flip = 2131558435;
 			
 			// aapt resource value: 0x7F0D0024
-			public static int crop_image_menu_flip_vertically = 2131558436;
+			public static int crop_image_menu_flip_horizontally = 2131558436;
 			
 			// aapt resource value: 0x7F0D0025
-			public static int crop_image_menu_rotate_left = 2131558437;
+			public static int crop_image_menu_flip_vertically = 2131558437;
 			
 			// aapt resource value: 0x7F0D0026
-			public static int crop_image_menu_rotate_right = 2131558438;
+			public static int crop_image_menu_rotate_left = 2131558438;
 			
 			// aapt resource value: 0x7F0D0027
-			public static int fab_transformation_scrim_behavior = 2131558439;
+			public static int crop_image_menu_rotate_right = 2131558439;
 			
 			// aapt resource value: 0x7F0D0028
-			public static int fab_transformation_sheet_behavior = 2131558440;
+			public static int fab_transformation_scrim_behavior = 2131558440;
 			
 			// aapt resource value: 0x7F0D0029
-			public static int hide_bottom_view_on_scroll_behavior = 2131558441;
+			public static int fab_transformation_sheet_behavior = 2131558441;
 			
 			// aapt resource value: 0x7F0D002A
-			public static int mtrl_chip_close_icon_content_description = 2131558442;
+			public static int fallback_menu_item_copy_link = 2131558442;
 			
 			// aapt resource value: 0x7F0D002B
-			public static int password_toggle_content_description = 2131558443;
+			public static int fallback_menu_item_open_in_browser = 2131558443;
 			
 			// aapt resource value: 0x7F0D002C
-			public static int path_password_eye = 2131558444;
+			public static int fallback_menu_item_share_link = 2131558444;
 			
 			// aapt resource value: 0x7F0D002D
-			public static int path_password_eye_mask_strike_through = 2131558445;
+			public static int hide_bottom_view_on_scroll_behavior = 2131558445;
 			
 			// aapt resource value: 0x7F0D002E
-			public static int path_password_eye_mask_visible = 2131558446;
+			public static int mtrl_chip_close_icon_content_description = 2131558446;
 			
 			// aapt resource value: 0x7F0D002F
-			public static int path_password_strike_through = 2131558447;
+			public static int password_toggle_content_description = 2131558447;
 			
 			// aapt resource value: 0x7F0D0030
-			public static int pick_image_intent_chooser_title = 2131558448;
+			public static int path_password_eye = 2131558448;
 			
 			// aapt resource value: 0x7F0D0031
-			public static int search_menu_title = 2131558449;
+			public static int path_password_eye_mask_strike_through = 2131558449;
 			
 			// aapt resource value: 0x7F0D0032
-			public static int status_bar_notification_info_overflow = 2131558450;
+			public static int path_password_eye_mask_visible = 2131558450;
+			
+			// aapt resource value: 0x7F0D0033
+			public static int path_password_strike_through = 2131558451;
+			
+			// aapt resource value: 0x7F0D0034
+			public static int pick_image_intent_chooser_title = 2131558452;
+			
+			// aapt resource value: 0x7F0D0035
+			public static int search_menu_title = 2131558453;
+			
+			// aapt resource value: 0x7F0D0036
+			public static int status_bar_notification_info_overflow = 2131558454;
 			
 			static String()
 			{
@@ -9290,7 +9302,10 @@ namespace Stormlion.ImageCropper.Droid
 		{
 			
 			// aapt resource value: 0x7F100000
-			public static int xamarin_essentials_fileprovider_file_paths = 2131755008;
+			public static int image_share_filepaths = 2131755008;
+			
+			// aapt resource value: 0x7F100001
+			public static int xamarin_essentials_fileprovider_file_paths = 2131755009;
 			
 			static Xml()
 			{
