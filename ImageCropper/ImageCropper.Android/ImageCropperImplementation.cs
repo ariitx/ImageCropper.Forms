@@ -1,9 +1,7 @@
 ﻿using Com.Theartofdev.Edmodo.Cropper;
-using Stormlion.ImageCropper.Droid;
 using System.Diagnostics;
-using Xamarin.Forms;
 using System;
-using Xamarin.Essentials;
+using Android.Graphics;
 
 namespace Stormlion.ImageCropper.Droid
 {
@@ -14,8 +12,10 @@ namespace Stormlion.ImageCropper.Droid
             try
             {
                 CropImage.ActivityBuilder activityBuilder = CropImage.Activity(Android.Net.Uri.FromFile(new Java.IO.File(imageFile)));
+                activityBuilder.SetCropMenuCropButtonTitle(imageCropper.CropButtonTitle);
+                activityBuilder.SetOutputCompressFormat(Bitmap.CompressFormat.Png);
 
-                if(imageCropper.CropShape == ImageCropper.CropShapeType.Oval)
+                if (imageCropper.CropShape == ImageCropper.CropShapeType.Oval)
                 {
                     activityBuilder.SetCropShape(CropImageView.CropShape.Oval);
                 }
@@ -39,6 +39,7 @@ namespace Stormlion.ImageCropper.Droid
                     activityBuilder.SetActivityTitle(imageCropper.PageTitle);
                 }
 
+                //Console.WriteLine("CurrentActivity. " + Xamarin.Essentials.Platform.CurrentActivity.PackageName);
                 activityBuilder.Start(Xamarin.Essentials.Platform.CurrentActivity);
             }
             catch(Exception ex)
@@ -47,5 +48,6 @@ namespace Stormlion.ImageCropper.Droid
             }
             
         }
+
     }
 }

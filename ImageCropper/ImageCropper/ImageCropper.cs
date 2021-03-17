@@ -37,6 +37,11 @@ namespace Stormlion.ImageCropper
 
         public string CancelButtonTitle { get; set; } = "Cancel";
 
+        /// <summary>
+        /// Boton para realizar el recorte
+        /// </summary>
+        public string CropButtonTitle { get; set; } = "Crop";
+
         public Action<string> Success { get; set; }
 
         public Action Faiure { get; set; }
@@ -65,29 +70,10 @@ namespace Stormlion.ImageCropper
                 {
                     if (action == TakePhotoTitle)
                     {
-                        /*
-                        if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
-                        {
-                            await page.DisplayAlert("No Camera", ":( No camera available.", "OK");
-                            Faiure?.Invoke();
-                            return;
-                        }
-                        file = await CrossMedia.Current.TakePhotoAsync(StoreCameraMediaOptions);
-                        */
                         file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
                     }
                     else if (action == PhotoLibraryTitle)
                     {
-                        /*
-                        if(!CrossMedia.Current.IsPickPhotoSupported)
-                        {
-                            await page.DisplayAlert("Error", "This device is not supported to pick photo.", "OK");
-                            Faiure?.Invoke();
-                            return;
-                        }
-                        file = await CrossMedia.Current.PickPhotoAsync(PickMediaOptions);
-                        */
-
                         file = await MediaPicker.PickPhotoAsync(MediaPickerOptions);
                     }
                     else
@@ -101,9 +87,20 @@ namespace Stormlion.ImageCropper
                     {
                         // save the file into local storage
                         newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
+                        //Copiarlo llevaba mucho trabajo
+                        /*
                         using (var stream = await file.OpenReadAsync())
-                        using (var newStream = File.OpenWrite(newFile))
+                        using (var newStream = File.OpenWrite(newFile)) {
                             await stream.CopyToAsync(newStream);
+                            stream.Close();
+                            newStream.Close();
+                        }
+                        */
+                        //Mover a cache local
+                        if (File.Exists(newFile)) {
+                            File.Delete(newFile);
+                        }
+                        File.Move(file.FullPath, newFile);
                     }
 
                 }
@@ -117,9 +114,10 @@ namespace Stormlion.ImageCropper
                     Faiure?.Invoke();
                     return;
                 }
-
-                //imageFile = file.Path;
-
+                if (Device.RuntimePlatform == Device.Android) {
+                    //Delay for fix Xamarin.Essentials.Platform.CurrentActivity no MediaPicker
+                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
+                }
                 imageFile = newFile;
             }
 
@@ -127,5 +125,6 @@ namespace Stormlion.ImageCropper
             await Task.Delay(TimeSpan.FromMilliseconds(100));
             DependencyService.Get<IImageCropperWrapper>().ShowFromFile(this, imageFile);
         }
+
     }
 }
