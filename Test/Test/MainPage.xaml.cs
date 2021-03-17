@@ -14,6 +14,7 @@ namespace Test
 
         protected async void OnClickedRectangle(object sender, EventArgs e)
         {
+            imageView.Source = null;
             new ImageCropper()
             {
 //                PageTitle = "Test Title",
@@ -25,12 +26,16 @@ namespace Test
                     {
                         imageView.Source = ImageSource.FromFile(imageFile);
                     });
+                },
+                Faiure = () => {
+                    Console.WriteLine("Error capturando la imagen o haciendo crop.");
                 }
             }.Show(this);
         }
 
         private void OnClickedCircle(object sender, EventArgs e)
         {
+            imageView.Source = null;
             new ImageCropper()
             {
                 CropShape = ImageCropper.CropShapeType.Oval,
@@ -40,6 +45,9 @@ namespace Test
                     {
                         imageView.Source = ImageSource.FromFile(imageFile);
                     });
+                },
+                Faiure = () => {
+                    Console.WriteLine("Error capturando la imagen o haciendo crop.");
                 }
             }.Show(this);
         }

@@ -85,7 +85,6 @@ namespace Stormlion.ImageCropper
                     //Si se capturo correctamente
                     if (file != null)
                     {
-                        
                         // save the file into local storage
                         newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
                         //Copiarlo llevaba mucho trabajo
@@ -102,7 +101,6 @@ namespace Stormlion.ImageCropper
                             File.Delete(newFile);
                         }
                         File.Move(file.FullPath, newFile);
-                        //CompressImage(newFile);
                     }
 
                 }
@@ -116,7 +114,10 @@ namespace Stormlion.ImageCropper
                     Faiure?.Invoke();
                     return;
                 }
-
+                if (Device.RuntimePlatform == Device.Android) {
+                    //Delay for fix Xamarin.Essentials.Platform.CurrentActivity no MediaPicker
+                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
+                }
                 imageFile = newFile;
             }
 
@@ -125,34 +126,5 @@ namespace Stormlion.ImageCropper
             DependencyService.Get<IImageCropperWrapper>().ShowFromFile(this, imageFile);
         }
 
-        /// <summary>
-        /// Comprime una imagen
-        /// </summary>
-        /// <param name="imageFilePath"></param>
-        public static void CompressImage(string imageFilePath)
-        {
-            byte[] imageData;
-            FileStream stream = new FileStream(imageFilePath, FileMode.Open, FileAccess.Read);
-            using (MemoryStream ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                imageData = ms.ToArray();
-            }
-            stream.Close();
-            stream.Dispose();
-            byte[] resizedImage = DependencyService.Get<IImageCropperWrapper>()
-            .ResizeImage(imageData, 1100, 1100);
-
-            MemoryStream imageReady = new MemoryStream(resizedImage);
-            if (System.IO.File.Exists(imageFilePath))
-            {
-                System.IO.File.Delete(imageFilePath);
-            }
-            using (FileStream file = new FileStream(imageFilePath, FileMode.Create, FileAccess.Write))
-            {
-                imageReady.WriteTo(file);
-                file.Close();
-            }
-        }
     }
 }
