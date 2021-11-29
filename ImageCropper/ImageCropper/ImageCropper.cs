@@ -21,7 +21,15 @@ namespace Stormlion.ImageCropper
             Oval
         };
 
+        public enum ResultErrorType
+        {
+            None,
+            CaptureNotSupported,
+        };
+
         public CropShapeType CropShape { get; set; } = CropShapeType.Rectangle;
+
+        public ResultErrorType ResultError { get; set; }
 
         public int AspectRatioX { get; set; } = 0;
 
@@ -55,6 +63,7 @@ namespace Stormlion.ImageCropper
 
         public async void Show(Page page, string imageFile = null)
         {
+            ResultError = ResultErrorType.None;
             if (imageFile == null)
             {
                 FileResult file = null;
@@ -65,29 +74,17 @@ namespace Stormlion.ImageCropper
                 {
                     if (action == TakePhotoTitle)
                     {
-                        /*
-                        if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+                        if (MediaPicker.IsCaptureSupported)
                         {
-                            await page.DisplayAlert("No Camera", ":( No camera available.", "OK");
-                            Faiure?.Invoke();
-                            return;
+                            file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
                         }
-                        file = await CrossMedia.Current.TakePhotoAsync(StoreCameraMediaOptions);
-                        */
-                        file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
+                        else {
+                            //No soporta la captura desde la camara
+                            ResultError = ResultErrorType.CaptureNotSupported;
+                        }
                     }
                     else if (action == PhotoLibraryTitle)
                     {
-                        /*
-                        if(!CrossMedia.Current.IsPickPhotoSupported)
-                        {
-                            await page.DisplayAlert("Error", "This device is not supported to pick photo.", "OK");
-                            Faiure?.Invoke();
-                            return;
-                        }
-                        file = await CrossMedia.Current.PickPhotoAsync(PickMediaOptions);
-                        */
-
                         file = await MediaPicker.PickPhotoAsync(MediaPickerOptions);
                     }
                     else
@@ -117,8 +114,6 @@ namespace Stormlion.ImageCropper
                     Faiure?.Invoke();
                     return;
                 }
-
-                //imageFile = file.Path;
 
                 imageFile = newFile;
             }
