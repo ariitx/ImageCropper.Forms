@@ -1,11 +1,9 @@
 ﻿using Bind_TOCropViewController;
 using CoreGraphics;
 using Foundation;
-using Stormlion.ImageCropper.iOS;
 using System;
 using System.Diagnostics;
 using UIKit;
-using Xamarin.Forms;
 
 namespace Stormlion.ImageCropper.iOS
 {
@@ -25,8 +23,10 @@ namespace Stormlion.ImageCropper.iOS
             {
                 cropViewController = new TOCropViewController(image);
             }
+            cropViewController.DoneButtonTitle = imageCropper.CropButtonTitle;
+            cropViewController.CancelButtonTitle = imageCropper.CancelButtonTitle;
 
-            if(imageCropper.AspectRatioX > 0 && imageCropper.AspectRatioY > 0)
+            if (imageCropper.AspectRatioX > 0 && imageCropper.AspectRatioY > 0)
             {
                 cropViewController.AspectRatioPreset = TOCropViewControllerAspectRatioPreset.Custom;
                 cropViewController.ResetAspectRatioEnabled = false;
@@ -79,5 +79,6 @@ namespace Stormlion.ImageCropper.iOS
             }
             UIApplication.SharedApplication.KeyWindow.RootViewController.DismissViewController(true, null);
         }
+
     }
 }
