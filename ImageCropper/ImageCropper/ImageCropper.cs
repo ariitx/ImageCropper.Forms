@@ -25,11 +25,12 @@ namespace Stormlion.ImageCropper
         {
             None,
             CaptureNotSupported,
+            CroppingError,
+            CroppingCancelled,
+            CroppingSaving,
         };
 
         public CropShapeType CropShape { get; set; } = CropShapeType.Rectangle;
-
-        public ResultErrorType ResultError { get; set; }
 
         public int AspectRatioX { get; set; } = 0;
 
@@ -52,7 +53,7 @@ namespace Stormlion.ImageCropper
 
         public Action<string> Success { get; set; }
 
-        public Action Faiure { get; set; }
+        public Action<ResultErrorType> Faiure { get; set; }
 
         /*
         public PickMediaOptions PickMediaOptions { get; set; } = new PickMediaOptions
@@ -68,7 +69,7 @@ namespace Stormlion.ImageCropper
 
         public async void Show(Page page, string imageFile = null)
         {
-            ResultError = ResultErrorType.None;
+            var ResultError = ResultErrorType.None;
             if (imageFile == null)
             {
                 FileResult file = null;
@@ -95,7 +96,7 @@ namespace Stormlion.ImageCropper
                     }
                     else
                     {
-                        Faiure?.Invoke();
+                        Faiure?.Invoke(ResultError);
                         return;
                     }
 
@@ -129,7 +130,7 @@ namespace Stormlion.ImageCropper
 
                 if (file == null || newFile == null)
                 {
-                    Faiure?.Invoke();
+                    Faiure?.Invoke(ResultError);
                     return;
                 }
                 if (Device.RuntimePlatform == Device.Android)
