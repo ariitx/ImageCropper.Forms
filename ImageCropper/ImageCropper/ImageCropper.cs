@@ -8,6 +8,8 @@ namespace Stormlion.ImageCropper
 {
     public class ImageCropper
     {
+        private const string TAG = "ImageCropper";
+
         public static ImageCropper Current { get; set; }
 
         public ImageCropper()
@@ -103,23 +105,12 @@ namespace Stormlion.ImageCropper
                     //Si se capturo correctamente
                     if (file != null)
                     {
+                        //Hay que copiarlo porque en iOS file.FullPath no da el path absoluto de la imagen
                         // save the file into local storage
                         newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
-                        //Copiarlo llevaba mucho trabajo
-                        /*
                         using (var stream = await file.OpenReadAsync())
-                        using (var newStream = File.OpenWrite(newFile)) {
+                        using (var newStream = File.OpenWrite(newFile))
                             await stream.CopyToAsync(newStream);
-                            stream.Close();
-                            newStream.Close();
-                        }
-                        */
-                        //Mover a cache local
-                        if (File.Exists(newFile))
-                        {
-                            File.Delete(newFile);
-                        }
-                        File.Move(file.FullPath, newFile);
                     }
 
                 }

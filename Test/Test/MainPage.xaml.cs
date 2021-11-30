@@ -1,6 +1,7 @@
 ﻿using Stormlion.ImageCropper;
 using System;
 using Xamarin.Forms;
+using static Stormlion.ImageCropper.ImageCropper;
 
 namespace Test
 {
@@ -27,7 +28,7 @@ namespace Test
                         imageView.Source = ImageSource.FromFile(imageFile);
                     });
                 },
-                Faiure = () => {
+                Faiure = (ResultErrorType resultErrorType) => {
                     Console.WriteLine("Error capturando la imagen o haciendo crop.");
                 }
             }.Show(this);
@@ -46,7 +47,7 @@ namespace Test
                         imageView.Source = ImageSource.FromFile(imageFile);
                     });
                 },
-                Faiure = () => {
+                Faiure = (ResultErrorType resultErrorType) => {
                     Console.WriteLine("Error capturando la imagen o haciendo crop.");
                 }
             }.Show(this);
