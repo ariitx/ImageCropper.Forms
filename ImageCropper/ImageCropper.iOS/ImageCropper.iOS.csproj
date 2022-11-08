@@ -39,9 +39,7 @@
     <Reference Include="Xamarin.iOS" />
     <Reference Include="OpenTK-1.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="ImageCropperImplementation.cs" />
     <Compile Include="Platform.cs" />

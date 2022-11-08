@@ -82,27 +82,50 @@ namespace Stormlion.ImageCropper
                         return;
                     }
 
-                    //Si se capturo correctamente
                     if (file != null)
                     {
                         // save the file into local storage
-                        newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
-                        //Copiarlo llevaba mucho trabajo
-                        /*
-                        using (var stream = await file.OpenReadAsync())
-                        using (var newStream = File.OpenWrite(newFile)) {
-                            await stream.CopyToAsync(newStream);
-                            stream.Close();
-                            newStream.Close();
-                        }
-                        */
-                        //Mover a cache local
-                        if (File.Exists(newFile)) {
-                            File.Delete(newFile);
-                        }
-                        File.Move(file.FullPath, newFile);
-                    }
+                        if (DeviceInfo.Platform == DevicePlatform.iOS)
+                        {
+                            newFile = await Device.InvokeOnMainThreadAsync<string>(async () =>
+                            {
+                                var stream = await file?.OpenReadAsync();
+                                var fileResultPath = string.Empty;
 
+                                if (stream != null && stream != Stream.Null)
+                                {
+                                    var tempFile = Path.Combine(FileSystem.CacheDirectory, file?.FileName);
+                                    using (var fileStream = new FileStream(tempFile, FileMode.CreateNew))
+                                    {
+                                        await stream.CopyToAsync(fileStream).ConfigureAwait(false);
+                                        await stream.FlushAsync().ConfigureAwait(false);
+                                    }
+                                    stream.Dispose();
+                                    return tempFile;
+                                }
+                                return string.Empty;
+                            });
+                        }
+                        else
+                        {
+                            newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
+                            //Copiarlo llevaba mucho trabajo
+                            /*
+                            using (var stream = await file.OpenReadAsync())
+                            using (var newStream = File.OpenWrite(newFile)) {
+                                await stream.CopyToAsync(newStream);
+                                stream.Close();
+                                newStream.Close();
+                            }
+                            */
+                            //Mover a cache local
+                            if (File.Exists(newFile))
+                            {
+                                File.Delete(newFile);
+                            }
+                            File.Move(file.FullPath, newFile);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -116,7 +139,7 @@ namespace Stormlion.ImageCropper
                 }
                 if (Device.RuntimePlatform == Device.Android) {
                     //Delay for fix Xamarin.Essentials.Platform.CurrentActivity no MediaPicker
-                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
+                    await Task.Delay(TimeSpan.FromMilliseconds(1000));
                 }
                 imageFile = newFile;
             }
