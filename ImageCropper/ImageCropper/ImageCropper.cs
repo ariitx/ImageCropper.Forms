@@ -8,6 +8,8 @@ namespace Stormlion.ImageCropper
 {
     public class ImageCropper
     {
+        private const string TAG = "ImageCropper";
+
         public static ImageCropper Current { get; set; }
 
         public ImageCropper()
@@ -19,6 +21,15 @@ namespace Stormlion.ImageCropper
         {
             Rectangle,
             Oval
+        };
+
+        public enum ResultErrorType
+        {
+            None,
+            CaptureNotSupported,
+            CroppingError,
+            CroppingCancelled,
+            CroppingSaving,
         };
 
         public CropShapeType CropShape { get; set; } = CropShapeType.Rectangle;
@@ -44,7 +55,7 @@ namespace Stormlion.ImageCropper
 
         public Action<string> Success { get; set; }
 
-        public Action Faiure { get; set; }
+        public Action<ResultErrorType> Faiure { get; set; }
 
         /*
         public PickMediaOptions PickMediaOptions { get; set; } = new PickMediaOptions
@@ -60,6 +71,7 @@ namespace Stormlion.ImageCropper
 
         public async void Show(Page page, string imageFile = null)
         {
+            var ResultError = ResultErrorType.None;
             if (imageFile == null)
             {
                 FileResult file = null;
@@ -70,7 +82,15 @@ namespace Stormlion.ImageCropper
                 {
                     if (action == TakePhotoTitle)
                     {
-                        file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
+                        if (MediaPicker.IsCaptureSupported)
+                        {
+                            file = await MediaPicker.CapturePhotoAsync(MediaPickerOptions);
+                        }
+                        else
+                        {
+                            //No soporta la captura desde la camara
+                            ResultError = ResultErrorType.CaptureNotSupported;
+                        }
                     }
                     else if (action == PhotoLibraryTitle)
                     {
@@ -78,53 +98,19 @@ namespace Stormlion.ImageCropper
                     }
                     else
                     {
-                        Faiure?.Invoke();
+                        Faiure?.Invoke(ResultError);
                         return;
                     }
 
                     if (file != null)
                     {
+                        //Hay que copiarlo porque en iOS file.FullPath no da el path absoluto de la imagen
                         // save the file into local storage
-                        if (DeviceInfo.Platform == DevicePlatform.iOS)
-                        {
-                            newFile = await Device.InvokeOnMainThreadAsync<string>(async () =>
-                            {
-                                var stream = await file?.OpenReadAsync();
-                                var fileResultPath = string.Empty;
+                        newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
+                        using (var stream = await file.OpenReadAsync())
+                        using (var newStream = File.OpenWrite(newFile))
+                            await stream.CopyToAsync(newStream);
 
-                                if (stream != null && stream != Stream.Null)
-                                {
-                                    var tempFile = Path.Combine(FileSystem.CacheDirectory, file?.FileName);
-                                    using (var fileStream = new FileStream(tempFile, FileMode.CreateNew))
-                                    {
-                                        await stream.CopyToAsync(fileStream).ConfigureAwait(false);
-                                        await stream.FlushAsync().ConfigureAwait(false);
-                                    }
-                                    stream.Dispose();
-                                    return tempFile;
-                                }
-                                return string.Empty;
-                            });
-                        }
-                        else
-                        {
-                            newFile = Path.Combine(FileSystem.CacheDirectory, file.FileName);
-                            //Copiarlo llevaba mucho trabajo
-                            /*
-                            using (var stream = await file.OpenReadAsync())
-                            using (var newStream = File.OpenWrite(newFile)) {
-                                await stream.CopyToAsync(newStream);
-                                stream.Close();
-                                newStream.Close();
-                            }
-                            */
-                            //Mover a cache local
-                            if (File.Exists(newFile))
-                            {
-                                File.Delete(newFile);
-                            }
-                            File.Move(file.FullPath, newFile);
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -134,10 +120,11 @@ namespace Stormlion.ImageCropper
 
                 if (file == null || newFile == null)
                 {
-                    Faiure?.Invoke();
+                    Faiure?.Invoke(ResultError);
                     return;
                 }
-                if (Device.RuntimePlatform == Device.Android) {
+                if (Device.RuntimePlatform == Device.Android)
+                {
                     //Delay for fix Xamarin.Essentials.Platform.CurrentActivity no MediaPicker
                     await Task.Delay(TimeSpan.FromMilliseconds(1000));
                 }
